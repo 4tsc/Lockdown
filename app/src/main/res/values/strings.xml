@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Lockdown</string>
+    <string name="accessibility_service_description">Enfoque usa este servicio para detectar qué app está en primer plano y bloquearla según los horarios que configuraste.</string>
+</resources>

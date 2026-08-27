@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<device-admin xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-policies>
+        <!-- Deliberadamente sin políticas reales. No forzamos password,
+             no permitimos borrado remoto ni cifrado. Solo queremos el
+             efecto de que Android exige desactivar el admin antes de
+             desinstalar. -->
+    </uses-policies>
+</device-admin>
