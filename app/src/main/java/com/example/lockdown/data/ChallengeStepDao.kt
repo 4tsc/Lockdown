@@ -15,4 +15,7 @@ interface ChallengeStepDao {
 
     @Query("UPDATE challenge_steps SET status = :status WHERE id = :id")
     suspend fun setStatus(id: Long, status: StepStatus)
+
+    @Query("SELECT * FROM challenge_steps WHERE id = :id LIMIT 1")
+    suspend fun getById(id: Long): ChallengeStep?
 }

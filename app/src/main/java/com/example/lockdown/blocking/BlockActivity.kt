@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.lockdown.ui.theme.LockdownTheme
+import com.example.lockdown.MainActivity
 
 class BlockActivity : ComponentActivity() {
     companion object {
@@ -39,7 +40,7 @@ class BlockActivity : ComponentActivity() {
         setContent {
             LockdownTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    BlockScreenContent(appLabel = appLabel, onGoHome = { goHome() })
+                    BlockScreenContent(appLabel = appLabel, onGoHome = { goHome() }, onRequestUnlock = { requestUnlock() })
                 }
             }
         }
@@ -52,10 +53,19 @@ class BlockActivity : ComponentActivity() {
         })
         finish()
     }
+
+    private fun requestUnlock() {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            putExtra(MainActivity.EXTRA_OPEN_CHALLENGE, true)
+        }
+        startActivity(intent)
+        finish()
+    }
 }
 
 @Composable
-private fun BlockScreenContent(appLabel: String, onGoHome: () -> Unit) {
+private fun BlockScreenContent(appLabel: String, onGoHome: () -> Unit, onRequestUnlock: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize().padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -69,6 +79,7 @@ private fun BlockScreenContent(appLabel: String, onGoHome: () -> Unit) {
         )
         Spacer(Modifier.height(32.dp))
         Button(onClick = onGoHome) { Text("Ir al inicio") }
-        // TODO Fase 6: botón "Solicitar desbloqueo" que inicia el reto de 7-8 notificaciones
+        Spacer(Modifier.height(8.dp))
+        OutlinedButton(onClick = onRequestUnlock) { Text("Solicitar desbloqueo") }
     }
 }

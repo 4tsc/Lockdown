@@ -71,7 +71,7 @@ fun requestDeviceAdmin(context: Context) {
         putExtra(android.app.admin.DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName)
         putExtra(
             android.app.admin.DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-            "Esto dificulta que puedas desinstalar la app sin antes desactivarla aquí."
+            "Esto dificulta que remuevas la app del teléfono por accidente o impulso."
         )
     }
     context.startActivity(intent)

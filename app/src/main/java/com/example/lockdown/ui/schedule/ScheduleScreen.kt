@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.Alignment
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.lockdown.data.BlockRule
@@ -19,19 +20,27 @@ import java.time.DayOfWeek
 import java.time.format.TextStyle
 import java.util.Locale
 
+
 private val dayLabels = DayOfWeek.entries.associateWith {
     it.getDisplayName(TextStyle.SHORT, Locale("es")).replaceFirstChar { c -> c.uppercase() }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScheduleScreen(viewModel: ScheduleViewModel = viewModel()) {
+fun ScheduleScreen(viewModel: ScheduleViewModel = viewModel(), onOpenChallenge: () -> Unit = {}) {
     val selectedDay by viewModel.selectedDay.collectAsState()
     val rules by viewModel.rulesForSelectedDay.collectAsState()
     var editingRule by remember { mutableStateOf<BlockRule?>(null) }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Text("Horarios de bloqueo", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(16.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Horarios de bloqueo", style = MaterialTheme.typography.headlineSmall)
+            TextButton(onClick = onOpenChallenge) { Text("Desbloqueo") }
+        }
 
         Row(modifier = Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 8.dp)) {
             DayOfWeek.entries.forEach { day ->

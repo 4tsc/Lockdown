@@ -16,21 +16,33 @@ import com.example.lockdown.ui.onboarding.WelcomeScreen
 import com.example.lockdown.util.Prefs
 import com.example.lockdown.ui.theme.LockdownTheme
 import com.example.lockdown.ui.schedule.ScheduleScreen
+import com.example.lockdown.ui.challenge.ChallengeScreen
 
 sealed class Screen {
     object Welcome : Screen()
     object Permissions : Screen()
     object Home : Screen()
+
+    object Challenge : Screen()
 }
 
 class MainActivity : ComponentActivity() {
+    companion object {
+        const val EXTRA_OPEN_CHALLENGE = "extra_open_challenge"
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             LockdownTheme {
                 val context = LocalContext.current
                 var screen by remember {
-                    mutableStateOf<Screen>(if (Prefs.isOnboardingDone(context)) Screen.Home else Screen.Welcome)
+                    mutableStateOf<Screen>(
+                        when {
+                            !Prefs.isOnboardingDone(context) -> Screen.Welcome
+                            intent.getBooleanExtra(EXTRA_OPEN_CHALLENGE, false) -> Screen.Challenge
+                            else -> Screen.Home
+                        }
+                    )
                 }
                 Surface(modifier = Modifier.fillMaxSize()) {
                     when (screen) {
@@ -39,7 +51,8 @@ class MainActivity : ComponentActivity() {
                             Prefs.setOnboardingDone(context, true)
                             screen = Screen.Home
                         })
-                        is Screen.Home -> ScheduleScreen()
+                        is Screen.Home -> ScheduleScreen(onOpenChallenge = { screen = Screen.Challenge })
+                        is Screen.Challenge -> ChallengeScreen(onBack = { screen = Screen.Home })
                     }
                 }
             }

@@ -94,6 +94,7 @@ class AppBlockerAccessibilityService : AccessibilityService() {
     }
 
     private fun isCurrentlyBlocked(pkg: String): Boolean {
+        if (com.example.lockdown.util.Prefs.isUnlockedToday(this)) return false
         val now = LocalTime.now()
         val nowMinutes = now.hour * 60 + now.minute
         return todaysRules.any { rule ->
