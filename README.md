@@ -1,7 +1,7 @@
 # Lockdown
 
-Aplicacion unicamente para Android diseñada para evitar el uso de aplicaciones de forma compulsiva, castigando severamente
-al usuario con interacciones molestas con cada intento de sortear los bloqueos.
+Aplicacion unicamente para Android diseñada para evitar el uso de aplicaciones de forma compulsiva, preveniendo al usuario
+de disfrutar de su telefono cuando no debe.
 
 Personalizada exclusivamente para un amigo.
 
