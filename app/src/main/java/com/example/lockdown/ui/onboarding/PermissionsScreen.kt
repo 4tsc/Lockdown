@@ -2,6 +2,7 @@ package com.example.lockdown.ui.onboarding
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -17,6 +18,9 @@ import com.example.lockdown.util.*
 @Composable
 fun PermissionsScreen(onAllGranted: () -> Unit) {
     val context = LocalContext.current
+    BackHandler {
+        (context as? android.app.Activity)?.moveTaskToBack(true)
+    }
     val lifecycleOwner = LocalLifecycleOwner.current
     var refreshKey by remember { mutableStateOf(0) }
 
@@ -104,7 +108,7 @@ private fun PermissionCard(
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(title, style = MaterialTheme.typography.titleMedium)
                 Text(
-                    if (granted) "Concedido" else "Pendiente",
+                    if (granted) "Ofrecido." else "Entregalo",
                     color = if (granted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.labelLarge
                 )
@@ -113,7 +117,7 @@ private fun PermissionCard(
             Text(description, style = MaterialTheme.typography.bodySmall)
             Spacer(Modifier.height(8.dp))
             Row {
-                if (!granted) Button(onClick = onRequest) { Text("Conceder") }
+                if (!granted) Button(onClick = onRequest) { Text("Tómalo") }
                 if (secondaryLabel != null && onSecondary != null) {
                     Spacer(Modifier.width(8.dp))
                     OutlinedButton(onClick = onSecondary) { Text(secondaryLabel) }

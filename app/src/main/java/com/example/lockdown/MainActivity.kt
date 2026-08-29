@@ -16,47 +16,56 @@ import com.example.lockdown.ui.onboarding.WelcomeScreen
 import com.example.lockdown.util.Prefs
 import com.example.lockdown.ui.theme.LockdownTheme
 import com.example.lockdown.ui.schedule.ScheduleScreen
-import com.example.lockdown.ui.challenge.ChallengeScreen
+import com.example.lockdown.ui.lock.LockedScreen
+import com.example.lockdown.ui.onboarding.SplashScreen
 
 sealed class Screen {
+    object Splash : Screen()
     object Welcome : Screen()
     object Permissions : Screen()
     object Home : Screen()
-
-    object Challenge : Screen()
 }
 
 class MainActivity : ComponentActivity() {
-    companion object {
-        const val EXTRA_OPEN_CHALLENGE = "extra_open_challenge"
-    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             LockdownTheme {
                 val context = LocalContext.current
-                var screen by remember {
-                    mutableStateOf<Screen>(
-                        when {
-                            !Prefs.isOnboardingDone(context) -> Screen.Welcome
-                            intent.getBooleanExtra(EXTRA_OPEN_CHALLENGE, false) -> Screen.Challenge
-                            else -> Screen.Home
-                        }
-                    )
-                }
+                var screen by remember { mutableStateOf<Screen>(Screen.Splash) }
                 Surface(modifier = Modifier.fillMaxSize()) {
                     when (screen) {
+                        is Screen.Splash -> SplashScreen(onFinished = {
+                            screen = if (Prefs.isOnboardingDone(context)) Screen.Home else Screen.Welcome
+                        })
                         is Screen.Welcome -> WelcomeScreen(onContinue = { screen = Screen.Permissions })
                         is Screen.Permissions -> PermissionsScreen(onAllGranted = {
                             Prefs.setOnboardingDone(context, true)
                             screen = Screen.Home
                         })
-                        is Screen.Home -> ScheduleScreen(onOpenChallenge = { screen = Screen.Challenge })
-                        is Screen.Challenge -> ChallengeScreen(onBack = { screen = Screen.Home })
+                        is Screen.Home -> HomeRouter()
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun HomeRouter() {
+    val context = LocalContext.current
+    var locked by remember { mutableStateOf(Prefs.isSetupLocked(context)) }
+    var unlockRefresh by remember { mutableStateOf(0) }
+    val unlockedToday = remember(unlockRefresh) { Prefs.isUnlockedToday(context) }
+
+    if (!locked || unlockedToday) {
+        ScheduleScreen(onFinishSetup = {
+            Prefs.setSetupLocked(context)
+            locked = true
+        })
+    } else {
+        LockedScreen(onUnlocked = { unlockRefresh++ })
     }
 }
 

@@ -27,20 +27,14 @@ private val dayLabels = DayOfWeek.entries.associateWith {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScheduleScreen(viewModel: ScheduleViewModel = viewModel(), onOpenChallenge: () -> Unit = {}) {
+fun ScheduleScreen(viewModel: ScheduleViewModel = viewModel(), onFinishSetup: () -> Unit = {}) {
     val selectedDay by viewModel.selectedDay.collectAsState()
     val rules by viewModel.rulesForSelectedDay.collectAsState()
     var editingRule by remember { mutableStateOf<BlockRule?>(null) }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Horarios de bloqueo", style = MaterialTheme.typography.headlineSmall)
-            TextButton(onClick = onOpenChallenge) { Text("Desbloqueo") }
-        }
+
+        Text("Horarios de bloqueo", style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(16.dp))
 
         Row(modifier = Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 8.dp)) {
             DayOfWeek.entries.forEach { day ->
@@ -66,6 +60,18 @@ fun ScheduleScreen(viewModel: ScheduleViewModel = viewModel(), onOpenChallenge: 
                 )
             }
         }
+
+        val hasAnyRule by viewModel.hasAnyRule.collectAsState()
+        Spacer(Modifier.height(8.dp))
+        Button(
+            onClick = onFinishSetup,
+            enabled = hasAnyRule,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+        ) {
+            Text("Sellar el pacto.")
+        }
+        Spacer(Modifier.height(16.dp))
+
     }
 
     editingRule?.let { rule ->

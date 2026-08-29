@@ -21,6 +21,9 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
     private val _selectedDay = MutableStateFlow(LocalDate.now().dayOfWeek.value)
     val selectedDay: StateFlow<Int> = _selectedDay
 
+    val hasAnyRule: StateFlow<Boolean> = repository.blockRuleDao.observeHasAnyEnabledRule()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), false)
+
     val rulesForSelectedDay: StateFlow<List<BlockRule>> = _selectedDay
         .flatMapLatest { day -> repository.blockRuleDao.observeForDay(day) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())

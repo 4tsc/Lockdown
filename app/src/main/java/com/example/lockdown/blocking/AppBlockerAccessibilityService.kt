@@ -59,8 +59,8 @@ class AppBlockerAccessibilityService : AccessibilityService() {
         // menciona el nombre de nuestra app, lo más probable es que sea
         // la de desactivar el admin o la de desinstalar/forzar cierre.
         if (pkg == SETTINGS_PACKAGE) {
-            if (isUninstallScreen(rootInActiveWindow)) {
-                Log.d(TAG, "pantalla de desinstalación detectada, saliendo")
+            if (isThreatScreen(rootInActiveWindow)) {
+                Log.d(TAG, "pantalla de riesgo detectada, saliendo")
                 performGlobalAction(GLOBAL_ACTION_HOME)
             }
             return
@@ -83,14 +83,18 @@ class AppBlockerAccessibilityService : AccessibilityService() {
         }
     }
 
-    private fun isUninstallScreen(root: AccessibilityNodeInfo?): Boolean {
+    private val threatKeywords = listOf(
+        "desinstalar", "uninstall",   // pantalla de desinstalar
+        "detener", "stop",            // apagar el servicio de accesibilidad
+        "desactivar", "deactivate"    // desactivar el administrador de dispositivo
+    )
+
+    private fun isThreatScreen(root: AccessibilityNodeInfo?): Boolean {
         if (root == null || appLabel.isEmpty()) return false
         val sb = StringBuilder()
         collectAllText(root, sb)
         val text = sb.toString()
-        val hasAppName = text.contains(appLabel, ignoreCase = true)
-        val hasUninstallWord = uninstallKeywords.any { text.contains(it, ignoreCase = true) }
-        return hasAppName && hasUninstallWord
+        return text.contains(appLabel, ignoreCase = true) && threatKeywords.any { text.contains(it, ignoreCase = true) }
     }
 
     private fun isCurrentlyBlocked(pkg: String): Boolean {

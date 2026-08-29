@@ -14,6 +14,9 @@ interface BlockRuleDao {
     @Query("SELECT * FROM block_rules WHERE isEnabled = 1")
     suspend fun getAllEnabled(): List<BlockRule>
 
+    @Query("SELECT EXISTS(SELECT 1 FROM block_rules WHERE isEnabled = 1)")
+    fun observeHasAnyEnabledRule(): kotlinx.coroutines.flow.Flow<Boolean>
+
     @Insert
     suspend fun insert(rule: BlockRule): Long
 
