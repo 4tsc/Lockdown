@@ -17,6 +17,7 @@ import com.example.lockdown.util.*
 
 @Composable
 fun PermissionsScreen(onAllGranted: () -> Unit) {
+
     val context = LocalContext.current
     BackHandler {
         (context as? android.app.Activity)?.moveTaskToBack(true)
@@ -36,19 +37,28 @@ fun PermissionsScreen(onAllGranted: () -> Unit) {
         ActivityResultContracts.RequestPermission()
     ) { refreshKey++ }
 
+    val fullScreenGranted = remember(refreshKey) { canUseFullScreenIntent(context) }
     val notificationGranted = remember(refreshKey) { PermissionChecks.hasNotificationPermission(context) }
     val overlayGranted = remember(refreshKey) { PermissionChecks.canDrawOverlays(context) }
     val exactAlarmGranted = remember(refreshKey) { PermissionChecks.canScheduleExactAlarms(context) }
     val batteryGranted = remember(refreshKey) { PermissionChecks.isIgnoringBatteryOptimizations(context) }
     val accessibilityGranted = remember(refreshKey) { PermissionChecks.isAccessibilityServiceEnabled(context) }
     val deviceAdminGranted = remember(refreshKey) { isDeviceAdminActive(context) }
-    val allGranted = notificationGranted && overlayGranted && exactAlarmGranted && batteryGranted && accessibilityGranted && deviceAdminGranted
+    val allGranted = notificationGranted && overlayGranted && exactAlarmGranted && batteryGranted && accessibilityGranted && deviceAdminGranted && fullScreenGranted
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text("Permisos necesarios", style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(8.dp))
 
         LazyColumn(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            item {
+                PermissionCard(
+                    "Notificaciones a pantalla completa",
+                    "Sin esto, los recordatorios y avisos solo suenan si tocas la notificación primero.",
+                    fullScreenGranted,
+                    { requestFullScreenIntentPermission(context) }
+                )
+            }
             item {
                 PermissionCard("Notificaciones", "Para avisarte durante el reto de desbloqueo.",
                     notificationGranted, { notificationLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS) })

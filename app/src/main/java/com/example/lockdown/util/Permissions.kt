@@ -76,3 +76,15 @@ fun requestDeviceAdmin(context: Context) {
     }
     context.startActivity(intent)
 }
+
+fun canUseFullScreenIntent(context: Context): Boolean {
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return true
+    val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+    return manager.canUseFullScreenIntent()
+}
+
+fun requestFullScreenIntentPermission(context: Context) {
+    if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return
+    val intent = Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT, Uri.parse("package:${context.packageName}"))
+    context.startActivity(intent)
+}

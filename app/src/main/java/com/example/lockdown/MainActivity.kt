@@ -18,6 +18,7 @@ import com.example.lockdown.ui.theme.LockdownTheme
 import com.example.lockdown.ui.schedule.ScheduleScreen
 import com.example.lockdown.ui.lock.LockedScreen
 import com.example.lockdown.ui.onboarding.SplashScreen
+import com.example.lockdown.ui.root.RootScreen
 
 sealed class Screen {
     object Splash : Screen()
@@ -44,28 +45,11 @@ class MainActivity : ComponentActivity() {
                             Prefs.setOnboardingDone(context, true)
                             screen = Screen.Home
                         })
-                        is Screen.Home -> HomeRouter()
+                        is Screen.Home -> RootScreen()
                     }
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun HomeRouter() {
-    val context = LocalContext.current
-    var locked by remember { mutableStateOf(Prefs.isSetupLocked(context)) }
-    var unlockRefresh by remember { mutableStateOf(0) }
-    val unlockedToday = remember(unlockRefresh) { Prefs.isUnlockedToday(context) }
-
-    if (!locked || unlockedToday) {
-        ScheduleScreen(onFinishSetup = {
-            Prefs.setSetupLocked(context)
-            locked = true
-        })
-    } else {
-        LockedScreen(onUnlocked = { unlockRefresh++ })
     }
 }
 

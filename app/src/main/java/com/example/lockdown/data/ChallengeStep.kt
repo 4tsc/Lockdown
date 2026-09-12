@@ -19,7 +19,7 @@ data class ChallengeStep(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val challengeId: Long,
     val stepIndex: Int,
-    val scheduledElapsedRealtime: Long,          // cuándo debe sonar la notificación
-    val responseDeadlineElapsedRealtime: Long,   // hasta cuándo puede responderla
+    val scheduledElapsedRealtime: Long,
+    val responseDeadlineElapsedRealtime: Long,
     val status: StepStatus = StepStatus.PENDING
 )
